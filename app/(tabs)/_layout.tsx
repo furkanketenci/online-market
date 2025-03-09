@@ -1,31 +1,87 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from '.';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import ProfileScreen from './profile';
+import FavoritesScreen from './favorites';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import BoxScreen from './box';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+    <SafeAreaView style={{ flex: 1 }}>
+      <Tab.Navigator
+        initialRouteName='HomeScreen'
+        screenOptions={{
+          tabBarActiveTintColor: "#6CC51D",
+          tabBarInactiveTintColor: "#868889",
+          tabBarStyle: {
+            height: 50,
+            paddingBottom: 5,
+            paddingTop: 5,
           },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
         }}
-      />
-    </Tabs>
+      >
+        <Tab.Screen
+          name='HomeScreen'
+          component={HomeScreen}
+          options={{
+            headerShown: false,
+            tabBarPosition: 'bottom',
+            tabBarLabel: "",
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name="home-outline" size={24} color={focused ? "#6CC51D" : "#868889"} />
+            ),
+          }}
+        >
+        </Tab.Screen>
+        <Tab.Screen
+          name='ProfileScreen'
+          component={ProfileScreen}
+          options={{
+            headerShown: false,
+            tabBarPosition: 'bottom',
+            tabBarLabel: "",
+            tabBarIcon: ({ focused }) => (
+              <AntDesign name="user" size={24} color={focused ? "#6CC51D" : "#868889"} />
+            )
+          }}
+        >
+        </Tab.Screen>
+        <Tab.Screen
+          name='FavoritesScreen'
+          component={FavoritesScreen}
+          options={{
+            headerShown: false,
+            tabBarPosition: 'bottom',
+            tabBarLabel: "",
+            tabBarIcon: ({ focused }) => (
+              <MaterialIcons name="favorite-outline" size={24} color={focused ? "#6CC51D" : "#868889"}
+              />
+            )
+          }}
+        >
+        </Tab.Screen>
+        <Tab.Screen
+          name='BoxScreen'
+          component={BoxScreen}
+          options={{
+            headerShown: false,
+            tabBarPosition: 'bottom',
+            tabBarLabel: "",
+            tabBarIcon: ({ focused }) => (
+              <SimpleLineIcons name="handbag" size={24} color={focused ? "#6CC51D" : "#868889"}
+              />
+            )
+          }}
+        >
+        </Tab.Screen>
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 }
