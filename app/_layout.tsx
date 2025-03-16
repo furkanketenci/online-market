@@ -1,39 +1,60 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { createStackNavigator } from '@react-navigation/stack';
+import TabLayout from './(tabs)/_layout';
+import Register from '@/components/Register';
+import Login from '@/components/Login';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import { store } from "./redux/store";
+import { Provider } from 'react-redux'
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+  const Stack = createStackNavigator();
+  const navigation = useNavigation();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Provider store={store}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Stack.Navigator screenOptions={
+          {
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+            )
+          }
+        }>
+          <Stack.Screen
+            name="tabLayout"
+            component={TabLayout}
+            options={{ title: '', headerShown: false, headerStatusBarHeight: 0, }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={
+              {
+                headerShown: true,
+                title: '',
+                headerTransparent: true,
+                headerStatusBarHeight: 0,
+              }
+            }
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={
+              {
+                headerShown: true,
+                title: '',
+                headerTransparent: true,
+                headerStatusBarHeight: 0,
+              }
+            }
+          />
+        </Stack.Navigator>
+      </SafeAreaView>
+    </Provider>
   );
 }
