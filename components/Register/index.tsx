@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import Colors from "@/constants/Colors";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/app/redux/store";
 
 type RootStackParamList = {
     Login: undefined;
@@ -14,12 +16,37 @@ type RootStackParamList = {
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Register = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const navigation = useNavigation<NavigationProp>();
+
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
 
     const showPasswordToggle = () => {
         setIsShowPassword(!isShowPassword);
     }
+
+    const handleSubmit = () => {
+        if (email === "" || password === "") {
+            Alert.alert("Email or Password cannot be blank!")
+        } else {
+            dispatch(register({ email: email, password: password }));
+            Alert.alert(
+                "Registration successful",
+                "",
+                [
+                    {
+                        text: "OK",
+                        onPress: () => navigation.navigate("Login")
+                    }
+                ]
+            );
+            setEmail("");
+            setPassword("")
+        }
+    }
+
     return (
         <>
             <View style={styles.registerContainer}>
@@ -35,8 +62,8 @@ const Register = () => {
                         placeholder="Email Address"
                         placeholderTextColor={Colors.textColor}
                         keyboardType="email-address"
-                        autoFocus
-
+                        value={email.toLowerCase()}
+                        onChangeText={(text) => setEmail(text.toLowerCase())}
                     />
                     <View style={styles.messageIcon}><Fontisto name="email" size={21} color={Colors.textColor} /></View>
                 </View>
@@ -46,6 +73,8 @@ const Register = () => {
                         secureTextEntry={!isShowPassword}
                         placeholder="**************"
                         placeholderTextColor={Colors.textColor}
+                        value={password}
+                        onChangeText={setPassword}
                     />
                     <View style={styles.messageIcon}><Feather name="lock" size={21} color={Colors.textColor} /></View>
                     <Pressable
@@ -57,7 +86,7 @@ const Register = () => {
                             : <Ionicons name="eye-outline" size={21} color={Colors.textColor} />}
                     </Pressable>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
 
@@ -149,4 +178,3 @@ const styles = StyleSheet.create({
     }
 
 });
-
