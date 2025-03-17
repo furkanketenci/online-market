@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -6,33 +6,53 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Colors from "@/constants/Colors";
-import { useSelector, useDispatch } from "react-redux";
-import { setEmail, setIsLoading, setPassword } from "@/app/redux/userSlice";
+import { useDispatch } from "react-redux";
+import { login } from "@/app/redux/userSlice";
+import { AppDispatch } from "@/app/redux/store";
 
 type RootStackParamList = {
     Register: undefined;
+    tabLayout: undefined;
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Login = () => {
+    const dispatch = useDispatch<AppDispatch>()
     const navigation = useNavigation<NavigationProp>();
-    const [isShowPassword, setIsShowPassword] = useState(false);
-
-    // userSlice içerisindeki verilerin okunması start
-    const { email, password, isLoading } = useSelector((state: any) => state.user);
-    console.log('email', email)
-    console.log('password', password)
-    console.log('isLoading', isLoading)
-    // userSlice içerisindeki verilerin okunması end
-
-    // userSlice içeirisnde reducer yapılarını kullanma veya veri gönderme start
-    const dispatch = useDispatch()
-    // userSlice içeirisnde reducer yapılarını kullanma veya veri gönderme end
-
+    const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
 
     const showPasswordToggle = () => {
         setIsShowPassword(!isShowPassword);
+    }
+
+    const handleSubmit = () => {
+        if (email === "" || password === "") {
+            Alert.alert("Email or Password cannot be blank!")
+        } else {
+            dispatch(login({ email: email, password: password })).then((res) => {
+                if (res.payload.status === true) {
+                    Alert.alert(
+                        "Login successful!",
+                        "",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("tabLayout")
+                            }
+                        ]
+                    )
+                } else {
+                    Alert.alert("Username or password is incorrect! Please check your information!")
+                }
+            }).catch(() => {
+                Alert.alert("An unexpected error!")
+            })
+            setEmail("")
+            setPassword("")
+        }
     }
     return (
         <>
@@ -50,7 +70,8 @@ const Login = () => {
                         placeholderTextColor={Colors.textColor}
                         keyboardType="email-address"
                         autoFocus
-                        onChangeText={(text) => dispatch(setEmail(text))}
+                        value={email}
+                        onChangeText={(text) => setEmail(text.toLowerCase())}
 
                     />
                     <View style={styles.messageIcon}><Fontisto name="email" size={21} color={Colors.textColor} /></View>
@@ -61,7 +82,8 @@ const Login = () => {
                         secureTextEntry={!isShowPassword}
                         placeholder="**************"
                         placeholderTextColor={Colors.textColor}
-                        onChangeText={(password) => dispatch(setPassword(password))}
+                        value={password}
+                        onChangeText={setPassword}
                     />
                     <View style={styles.messageIcon}><Feather name="lock" size={21} color={Colors.textColor} /></View>
                     <Pressable
@@ -73,7 +95,7 @@ const Login = () => {
                             : <Ionicons name="eye-outline" size={21} color={Colors.textColor} />}
                     </Pressable>
                 </View>
-                <TouchableOpacity style={styles.button} onPress={() => dispatch(isLoading(true))}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
 
