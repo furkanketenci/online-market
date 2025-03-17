@@ -8,6 +8,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Colors from "@/constants/Colors";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/redux/store";
+import { register } from "@/app/redux/userSlice";
 
 type RootStackParamList = {
     Login: undefined;
