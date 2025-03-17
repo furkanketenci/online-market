@@ -1,78 +1,97 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
 
 export interface UserState {
     email: string | null;
     password: string | null;
     isLoading: boolean;
-    // isAuth: boolean;
+    isAuth: boolean;
 }
 
 const initialState: UserState = {
     email: null,
     password: null,
     isLoading: false,
-    // isAuth: false
+    isAuth: false,
 }
 
-// export const login = createAsyncThunk("auth/login", async ({ email, password }: { email: string, password: string }, { rejectWithValue }) => {
+export const login = createAsyncThunk(
+    "user/login",
+    async ({ email, password }: { email: string, password: string }) => {
+        const response = await fetch("http://localhost:3000/test/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        })
+        const data = await response.json();
+        return data;
+    }
+)
 
-//     try {
-//         const response = await fetch("http://localhost:3000/login", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({ email, password }),
-//         })
-//         console.log("response", response)
+export const register = createAsyncThunk(
+    "user/register",
+    async ({ email, password }: { email: string, password: string }) => {
+        const response = await fetch("http://localhost:3000/test/register", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        return data;
+    }
+)
 
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             return rejectWithValue(errorData);
-//         }
-
-//         return await response.json();
-//     } catch (error) {
-//         console.log("Fetch error", error);
-//         return rejectWithValue({ message: "Network error or server unreachable" });
-//     }
-
-// })
 
 export const userSlice = createSlice({
     name: "user",
     initialState,
-    reducers: {
-        // buradaki state tamamen initial state'i temsil ediyor.
-        // action aslında veridir. action.payload ise action içerisinde gelen veri anlamına gelir.
-        setEmail: (state, action) => {
-            state.email = action.payload
-        },
-        setPassword: (state, action) => {
-            state.password = action.payload
-        },
-        setIsLoading: (state, action) => {
-            state.isLoading = action.payload
-        },
-    },
+    // reducers: {
+    //     setEmail: (state, action) => {
+    //         state.email = action.payload
+    //     },
+    //     setPassword: (state, action) => {
+    //         state.password = action.payload
+    //     },
+    //     setIsLoading: (state, action) => {
+    //         state.isLoading = action.payload
+    //     },
+    // },
+    reducers: {},
+    extraReducers: (builder) => {
+        // register start
+        builder.addCase(register.pending, (state) => {
+            state.isLoading = true;
+        })
+        builder.addCase(register.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.email = action.payload.email;
+            state.password = action.payload.password;
+        })
+        builder.addCase(register.rejected, (state) => {
+            state.isLoading = false
+        })
+        // register end
 
-    // state -> buradaki state tamamen initial state'i temsil ediyor. Initial veriyi değiştirmeye olanak sağlar.
-    // extraReducers: (builder) => {
-    //     builder.addCase(login.pending, (state) => {
-    //         state.isLoading = true;
-    //         // state.isAuth = false
-    //     })
-    //     builder.addCase(login.fulfilled, (state) => {
-    //         state.isLoading = false;
-    //         // state.isAuth = true
-    //     })
-    //     builder.addCase(login.rejected, (state) => {
-    //         state.isLoading = false;
-    //         // state.isAuth = false
-    //     })
-    // }
+        // login start
+        builder.addCase(login.pending, (state) => {
+            state.isLoading = true
+        })
+        builder.addCase(login.fulfilled, (state, action) => {
+            state.isLoading = false
+            state.email = action.payload.email;
+            state.password = action.payload.password;
+            state.isAuth = action.payload.status === true ? true : false;
+        })
+        builder.addCase(login.rejected, (state) => {
+            state.isLoading = false;
+            state.isAuth = false;
+        })
+        // login end
+    }
 
 })
-export const { setEmail, setPassword, setIsLoading } = userSlice.actions
+// export const { setEmail, setPassword, setIsLoading } = userSlice.actions
 export default userSlice.reducer;
