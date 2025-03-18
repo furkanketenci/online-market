@@ -5,6 +5,7 @@ const Colors = {
   textColor: "#868889",
   linkColor: "#1A0DAB",
   borderColor: "EBEBEB",
+  borderColor2: "#1919191a",
   primary: "AEDC81",
   primaryDark: "#6CC51D",
   primaryLight: "#EBFFD7"
