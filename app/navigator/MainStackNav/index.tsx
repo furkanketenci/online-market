@@ -15,7 +15,6 @@ const MainStackNav = () => {
     const isAuth = useSelector((state: RootState) => state.user.isAuth);
     return (
         <Stack.Navigator
-            initialRouteName={isAuth ? "tabLayout" : "Welcome"}
             screenOptions={
                 {
                     headerLeft: () => (
