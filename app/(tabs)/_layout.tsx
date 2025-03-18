@@ -6,8 +6,8 @@ import FavoritesScreen from './favorites';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import BoxScreen from './box';
-import WelcomeScreen from './welcome';
 import Colors from '@/constants/Colors';
+import SearchScreen from './search';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,14 +40,14 @@ export default function TabLayout() {
       >
       </Tab.Screen>
       <Tab.Screen
-        name='Welcome'
-        component={WelcomeScreen}
+        name='SearchScreen'
+        component={SearchScreen}
         options={{
           headerShown: false,
           tabBarPosition: 'bottom',
           tabBarLabel: "",
           tabBarIcon: ({ focused }) => (
-            <AntDesign name="user" size={24} color={focused ? Colors.primaryDark : Colors.textColor} />
+            <AntDesign name="search1" size={24} color={focused ? Colors.primaryDark : Colors.textColor} />
           )
         }}
       >
